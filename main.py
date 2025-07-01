@@ -27,7 +27,7 @@ def track_session_data(process_name, pid):
 
 """Testing is done!!"""
 
-def get_largest_memory_process(process_name) -> psutil.Process: # get the pid based on memory allocation  
+def get_largest_memory_process(process_name) -> psutil.Process | None: # get the pid based on memory allocation  
     best_proc : psutil.Process | None = None
     max_mem = 0
 
@@ -41,13 +41,13 @@ def get_largest_memory_process(process_name) -> psutil.Process: # get the pid ba
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
 
-    return (best_proc : psutil.Process | none)
+    return best_proc
 
-def check_if_process_is_active(process_name, pid : int):
+def check_if_process_is_active(process_name, pid : int) -> bool:
     for proc in psutil.process_iter(attrs=["name", "pid"]):
         if proc.info["name"].lower() == process_name.lower() and proc.info["pid"] == pid:
             return True  # returns true if the process is running 
-    # returns False if the process is not running
+    return False# returns False if the process is not running
 
 """May not need this function any more"""
 def get_pid(processes):
@@ -73,10 +73,11 @@ def get_pid(processes):
 def main():
     # get_pid(ALL_APPS)
     proc: psutil.Process | None = get_largest_memory_process("Code.exe")
-    print(type(proc))
-    print(proc)
-    track_session_data("Code.exe", proc.info["pid"])
-    print(check_if_process_is_active("Code.exe", proc.info["pid"]))
+    if proc is not None:
+        print(type(proc))
+        print(proc)
+        track_session_data("Code.exe", proc.info["pid"])
+        print(check_if_process_is_active("Code.exe", proc.info["pid"]))
             
 
 
