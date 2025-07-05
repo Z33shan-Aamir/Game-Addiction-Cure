@@ -12,16 +12,16 @@ ALL_APPS = PRODUCTIVE_APPS + UNPRODUCTIVE_APPS
 
 
 """Testing is Done"""
+active_tasks = []
 def track_session_data(process_name, pid):
-    active_tasks = []
     if process_name not in active_tasks and check_if_process_is_active(process_name, pid): # if process is active and is in the above list then will mark the start time
         session_start = datetime.datetime.now()
-        print(session_start)
+        print(f"session_start: {session_start}\nProcess name: {process_name}")
         
         active_tasks.append(process_name)
-    elif process_name in active_tasks and check_if_process_is_active(process_name, pid): # if process is no longer active, remove it from active tasks and mark the session end time 
+    elif process_name in active_tasks and check_if_process_is_active(process_name, pid) == False: # if process is no longer active, remove it from active tasks and mark the session end time 
         session_end = datetime.datetime.now()
-        print(session_end)
+        print(f"session_end: {session_end}\nProcess name: {process_name}")
         
     pass
 
@@ -50,35 +50,31 @@ def check_if_process_is_active(process_name, pid : int) -> bool:
     return False# returns False if the process is not running
 
 """May not need this function any more"""
-def get_pid(processes):
-    for proc in psutil.process_iter(attrs=["name", "pid"]):
-        for process in processes:
-            if process.lower() == proc.info["name"].lower():
-                data = {
-                    proc.info["name"]:
-                        {
-                            "sessions":
-                                [
-                                    {
-                                        "pid" : proc.info["pid"],
-                                        "session_start" : datetime.datetime.now(),
-                                        # "session_end" : da
-                                    }
-                                ]
-                        }
-                }
-                print(json.dumps(data, indent=4))
-                with open("./app_usage.json", "w") as f:
-                    json.dump(data,f, indent=4)
+# def get_pid(processes):
+#     for proc in psutil.process_iter(attrs=["name", "pid"]):
+#         for process in processes:
+#             if process.lower() == proc.info["name"].lower():
+#                 data = {
+#                     proc.info["name"]:
+#                         {
+#                             "sessions":
+#                                 [
+#                                     {
+#                                         "pid" : proc.info["pid"],
+#                                         "session_start" : datetime.datetime.now(),
+#                                         # "session_end" : da
+#                                     }
+#                                 ]
+#                         }
+#                 }
+#                 print(json.dumps(data, indent=4))
+#                 with open("./app_usage.json", "w") as f:
+#                     json.dump(data,f, indent=4)
 def main():
-    # get_pid(ALL_APPS)
-    proc: psutil.Process | None = get_largest_memory_process("Code.exe")
-    if proc is not None:
-        print(type(proc))
-        print(proc)
-        track_session_data("Code.exe", proc.info["pid"])
-        print(check_if_process_is_active("Code.exe", proc.info["pid"]))
-            
+    pid = get_largest_memory_process("Code.exe")
+    while True:
+        if pid is not None:
+            track_session_data("Code.exe", pid.info["pid"])
 
-
-main()
+if __name__ == "__main__":
+    main()
