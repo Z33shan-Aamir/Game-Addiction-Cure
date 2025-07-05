@@ -20,6 +20,7 @@ def track_session_data(process_name, pid):
         
         active_tasks.append(process_name)
     elif process_name in active_tasks and check_if_process_is_active(process_name, pid) == False: # if process is no longer active, remove it from active tasks and mark the session end time 
+        active_tasks.remove(process_name)
         session_end = datetime.datetime.now()
         print(f"session_end: {session_end}\nProcess name: {process_name}")
         
@@ -71,10 +72,10 @@ def check_if_process_is_active(process_name, pid : int) -> bool:
 #                 with open("./app_usage.json", "w") as f:
 #                     json.dump(data,f, indent=4)
 def main():
-    pid = get_largest_memory_process("Code.exe")
+    pid = get_largest_memory_process("Notepad.exe")
     while True:
         if pid is not None:
-            track_session_data("Code.exe", pid.info["pid"])
+            track_session_data("Notepad.exe", pid.info["pid"])
 
 if __name__ == "__main__":
     main()
