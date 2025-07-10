@@ -1,9 +1,9 @@
 import psutil
-import datetime,time
-import win32gui
-import threading
+import datetime
 
-import json
+# local imports
+from write import wirte_session_data_to_file
+
 
 PRODUCTIVE_APPS = ["Code.exe", "notepad.exe"]
 UNPRODUCTIVE_APPS = ["tiktok.exe", "discord.exe"]
@@ -17,6 +17,7 @@ def track_session_data(process_name, pid):
     if process_name not in active_tasks and check_if_process_is_active(process_name, pid): # if process is active and is in the above list then will mark the start time
         session_start = datetime.datetime.now()
         print(f"session_start: {session_start}\nProcess name: {process_name}")
+        wirte_session_data_to_file(process_name, session_start)
         
         active_tasks.append(process_name)
     elif process_name in active_tasks and check_if_process_is_active(process_name, pid) == False: # if process is no longer active, remove it from active tasks and mark the session end time 
