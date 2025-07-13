@@ -83,10 +83,10 @@ def check_if_process_is_active(process_name, pid : int) -> bool:
 
 
 
-def main():
+def main(process_name):
     # Check all running instances of the tracked app
     for proc in psutil.process_iter(attrs=["name", "pid"]):
-        if proc.info["name"] and proc.info["name"].lower() == "firefox":
+        if proc.info["name"] and proc.info["name"].lower() == process_name.lower():
             track_session_data(proc.info["name"], proc.info["pid"])
 
     # Detect if any tracked PIDs have disappeared (process ended)
@@ -99,5 +99,5 @@ def main():
 
 if __name__ == "__main__":
     while True:
-        main()
+        main("firefox")
         time.sleep(1)
