@@ -1,31 +1,34 @@
 import psutil
-import datetime
+import datetime, time
 
 # local imports
 from write import wirte_session_data_to_file
 
 
-PRODUCTIVE_APPS = ["Code.exe", "notepad.exe"]
-UNPRODUCTIVE_APPS = ["tiktok.exe", "discord.exe"]
+PRODUCTIVE_APPS = ["code"]
+UNPRODUCTIVE_APPS = ["heroic"]
 
 ALL_APPS = PRODUCTIVE_APPS + UNPRODUCTIVE_APPS
 
 
 """Testing is Done"""
-active_tasks = []
+active_tasks = {}
 def track_session_data(process_name, pid):
-    if process_name not in active_tasks and check_if_process_is_active(process_name, pid): # if process is active and is in the above list then will mark the start time
+    if pid not in active_tasks and check_if_process_is_active(process_name, pid):
+        # Process started
         session_start = datetime.datetime.now()
-        print(f"session_start: {session_start}\nProcess name: {process_name}")
-        wirte_session_data_to_file(process_name, session_start)
-        
-        active_tasks.append(process_name)
-    elif process_name in active_tasks and check_if_process_is_active(process_name, pid) == False: # if process is no longer active, remove it from active tasks and mark the session end time 
-        active_tasks.remove(process_name)
+        print(f"Session started: {session_start} | Process: {process_name} | PID: {pid}")
+        # wirte_session_data_to_file(process_name, session_start)
+        active_tasks[pid] = (process_name, session_start)
+        print(active_tasks)
+
+    elif pid in active_tasks and not check_if_process_is_active(process_name, pid):
+        # Process ended
+        process_name, session_start = active_tasks.pop(pid)
         session_end = datetime.datetime.now()
-        print(f"session_end: {session_end}\nProcess name: {process_name}")
-        
-    pass
+        print(f"Session ended: {session_end} | Process: {process_name} | PID: {pid}")
+        # You can call a function here to write session data with start and end
+
 
 """Testing is done!!"""
 
@@ -72,11 +75,29 @@ def check_if_process_is_active(process_name, pid : int) -> bool:
 #                 print(json.dumps(data, indent=4))
 #                 with open("./app_usage.json", "w") as f:
 #                     json.dump(data,f, indent=4)
+# def main():
+#     pid = get_largest_memory_process("firefox")
+#     if pid is not None:
+#             # print(f"pid: {pid}")
+#         track_session_data("firefox", pid.info["pid"])
+
+
+
 def main():
-    pid = get_largest_memory_process("Notepad.exe")
-    while True:
-        if pid is not None:
-            track_session_data("Notepad.exe", pid.info["pid"])
+    # Check all running instances of the tracked app
+    for proc in psutil.process_iter(attrs=["name", "pid"]):
+        if proc.info["name"] and proc.info["name"].lower() == "firefox":
+            track_session_data(proc.info["name"], proc.info["pid"])
+
+    # Detect if any tracked PIDs have disappeared (process ended)
+    current_pids = {proc.info["pid"] for proc in psutil.process_iter(attrs=["pid"])} # stores all the pids for workin processes
+    for pid in list(active_tasks.keys()):
+        if pid not in current_pids: #if the process pid is not in all process pids then it will run the code
+            process_name, session_start = active_tasks.pop(pid)
+            session_end = datetime.datetime.now()
+            print(f"Session ended: {session_end} | Process: {process_name} | PID: {pid}")  # marks the session end
 
 if __name__ == "__main__":
-    main()
+    while True:
+        main()
+        time.sleep(1)
