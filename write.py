@@ -1,40 +1,48 @@
 import json
 import datetime
 
-def wirte_session_data_to_file (process_name, session_start ,session_end = None):
-    data = {
-        process_name: {
-            "sessions" : [
-                {
-                    "session_start": session_start,
-                    "session_end": session_end,
-                }
-            ]
-        }
-    }
-    try:
-        with open("./app_usage.json", "a") as f:
-            json.dump(data, f, indent=4)
-    except:
-        print("Exeption Occoured on line 18 in write.py")
+# def wirte_session_data_to_file (process_name, session_start ,session_end = None):
+#     data = {
+#         process_name: {
+#             "sessions" : [
+#                 {
+#                     "session_start": session_start,
+#                     "session_end": session_end,
+#                 }
+#             ]
+#         }
+#     }
+#     try:
+#         with open("./app_usage.json", "a") as f:
+#             json.dump(data, f, indent=4)
+#     except:
+#         print("Exeption Occoured on line 18 in write.py")
 
+
+def write_sessison_data_to_file(process_name, session_start, session_end = None):
+    try:
+        data = get_data_from_json_file()
+    except:
+        data = {}
+    else:
+        new_session_data = {
+            "session_start": session_start,
+            "session_end" : None,
+            "was_marked" : False,
+            "mark_day" : datetime.date.today()
+        }
+        data[process_name]["sessions"]
 def session_end_stamp(process_name, session_end):
     with open("./app_usage.json", "r") as f:
         data = json.load(f)
     for i, session_data in enumerate(data["process_name"]["sessions"]):
         if session_data["session_end"] == None:
             session_data["session_end"] = session_end 
-            wirte_session_data_to_file(process_name, data["process_name"]["sessions"][i]["session_start"], session_end )
+            write_sessison_data_to_file(process_name, data["process_name"]["sessions"][i]["session_start"], session_end )
             print("session end data has been written")
 
 def random_exit(process_name):
-    data = get_data_from_json_file()
-    for session in data[process_name]["sessions"]:
-        if session["session_end"] == None:
-            session_start = session["session_start"]
-    wirte_session_data_to_file(process_name, session_start, session_end=datetime.datetime.now)
-    
-import json
+    pass
 
 def get_data_from_json_file(
     file="./app_usage.json",
