@@ -2,7 +2,7 @@ import psutil
 import datetime, time
 
 # local imports
-from write import wirte_session_data_to_file
+# from write import wirte_session_data_to_file
 
 
 PRODUCTIVE_APPS = ["code"]
@@ -88,7 +88,6 @@ def main(process_name):
     for proc in psutil.process_iter(attrs=["name", "pid"]):
         if proc.info["name"] and proc.info["name"].lower() == process_name.lower():
             track_session_data(proc.info["name"], proc.info["pid"])
-
     # Detect if any tracked PIDs have disappeared (process ended)
     current_pids = {proc.info["pid"] for proc in psutil.process_iter(attrs=["pid"])} # stores all the pids for workin processes
     for pid in list(active_tasks.keys()):
