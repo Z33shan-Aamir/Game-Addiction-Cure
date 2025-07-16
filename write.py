@@ -120,3 +120,9 @@ def session_end_stamp(process_name: str, session_end, session_start):
 
 def random_exit(process_name):
     pass
+
+
+    """
+    Todo 
+    Need to handle graceful shutdowns
+    """
