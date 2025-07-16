@@ -77,7 +77,7 @@ def write_session_data_to_file(process_name, is_productive, session_start, sessi
     try:
         # Create an instance to call the method properly
         data = app_usage._load_data()  # Call the method to get the data dictionary
-        print(data)  # for debugging
+        
     except Exception as e:
         print(f"Error loading data: {e}")
         data = {}
