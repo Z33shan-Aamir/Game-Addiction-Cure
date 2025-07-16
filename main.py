@@ -52,33 +52,6 @@ def check_if_process_is_active(process_name, pid : int) -> bool:
             return True  # returns true if the process is running 
     return False# returns False if the process is not running
 
-"""May not need this function any more"""
-# def get_pid(processes):
-#     for proc in psutil.process_iter(attrs=["name", "pid"]):
-#         for process in processes:
-#             if process.lower() == proc.info["name"].lower():
-#                 data = {
-#                     proc.info["name"]:
-#                         {
-#                             "sessions":
-#                                 [
-#                                     {
-#                                         "pid" : proc.info["pid"],
-#                                         "session_start" : datetime.datetime.now(),
-#                                         # "session_end" : da
-#                                     }
-#                                 ]
-#                         }
-#                 }
-#                 print(json.dumps(data, indent=4))
-#                 with open("./app_usage.json", "w") as f:
-#                     json.dump(data,f, indent=4)
-# def main():
-#     pid = get_largest_memory_process("firefox")
-#     if pid is not None:
-#             # print(f"pid: {pid}")
-#         track_session_data("firefox", pid.info["pid"])
-
 
 
 def main(process_name):
