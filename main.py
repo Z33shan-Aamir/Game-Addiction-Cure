@@ -3,10 +3,10 @@ import datetime, time
 
 # local imports
 from write import write_session_data_to_file, session_end_stamp
+# from time_allocation import ellapsed_time
 
-
-PRODUCTIVE_APPS = ["firefox", "code"]
-UNPRODUCTIVE_APPS = ["heroic"]
+PRODUCTIVE_APPS = ["Chrome.exe", "Code.exe"]
+UNPRODUCTIVE_APPS = ["Control_DX12.exe"]
 
 ALL_APPS = PRODUCTIVE_APPS + UNPRODUCTIVE_APPS
 
@@ -20,6 +20,7 @@ def track_session_data(process_name, pid):
         print(f"(++)Session started: {session_start} | Process: {process_name} | PID: {pid}")
         if process_name in PRODUCTIVE_APPS:
             write_session_data_to_file(process_name, session_start=session_start, is_productive=True)
+            
         elif process_name in UNPRODUCTIVE_APPS:
             write_session_data_to_file(process_name, session_start=session_start, is_productive=False)
         else:
@@ -67,22 +68,6 @@ def main(process_name):
             print(f" (--) Session ended: {session_end} | Process: {pname} | PID: {pid}")
             session_end_stamp(process_name=pname, session_end=session_end, session_start=session_start)
 
-
-# def main(process_name):
-#     # Check all running instances of the tracked app
-#     for proc in psutil.process_iter(attrs=["name", "pid"]):
-#         if proc.info["name"] and proc.info["name"].lower() == process_name:
-#             get_largest_memory_process(process_name)
-#             track_session_data(proc.info["name"], proc.info["pid"])
-
-#     # Detect if any tracked PIDs have disappeared (process ended)
-#     current_pids = {proc.info["pid"] for proc in psutil.process_iter(attrs=["pid"])} # stores all the pids for workin processes
-#     for pid in list(active_tasks.keys()):
-#         if pid not in current_pids: #if the process pid is not in all process pids then it will run the code
-#             session_end = datetime.datetime.now()
-#             print(f"Session ended: {session_end} | Process: {process_name} | PID: {pid}")  # marks the session end
-#             session_end_stamp(process_name=process_name, session_end=session_end, session_start=active_tasks[pid][1])
-#             process_name, session_start = active_tasks.pop(pid)
 
 if __name__ == "__main__":
     while True:
