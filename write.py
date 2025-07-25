@@ -81,6 +81,7 @@ def write_session_data_to_file(process_name, is_productive, session_start, sessi
     except Exception as e:
         print(f"Error loading data: {e}")
         data = {}
+    process_name = process_name.lower()
     session_start = session_start
     new_session_data = {
         "session_start": session_start,
@@ -100,6 +101,7 @@ def write_session_data_to_file(process_name, is_productive, session_start, sessi
 
            
 def session_end_stamp(process_name: str, session_end, session_start):
+    process_name = process_name.lower()
     data = app_usage._load_data()
     if process_name not in list(data.keys()):
         data[process_name] = {"sessions":[]}
