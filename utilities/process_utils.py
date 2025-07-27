@@ -18,14 +18,20 @@ def get_largest_memory_process(process_name):
     return best_proc
 
 def check_if_process_is_active(process_name):
+    """_summary_
+    Check if a process is running
+    Args:
+        process_name (str): Name of the process that is to be checked
+
+    Returns:
+        boolean: Returns true if process is active and false if not
+    """
     process_name = process_name.lower()
     for proc in psutil.process_iter(attrs=["name", "pid"]):
         if proc.info["name"].lower() == process_name:
             return True
     return False
 
-    """check_if_process_is_running_in_background
-    """
 
 def check_if_process_is_running_in_background(process_name):
     """_summary_
