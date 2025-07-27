@@ -1,3 +1,5 @@
+import win32gui, win32process
+import time
 import psutil
 
 def get_largest_memory_process(process_name):
@@ -15,9 +17,68 @@ def get_largest_memory_process(process_name):
             continue
     return best_proc
 
-def check_if_process_is_active(process_name, pid):
+def check_if_process_is_active(process_name):
     process_name = process_name.lower()
     for proc in psutil.process_iter(attrs=["name", "pid"]):
-        if proc.info["name"].lower() == process_name and proc.info["pid"] == pid:
+        if proc.info["name"].lower() == process_name:
             return True
     return False
+
+    """check_if_process_is_running_in_background
+    """
+
+def check_if_process_is_running_in_background(process_name):
+    """_summary_
+    The name explains it all and only returns true if the user is interacting with it
+    Args:
+        process_name (str): name of the porcess
+
+    Returns:
+        bool: returns true if app is not being interacted with
+    """
+    # Get the foreground window's HWND
+    hwnd = win32gui.GetForegroundWindow()
+    if hwnd == 0:
+        # No foreground window found
+        return None
+
+    # Get PID of foreground window's process
+    _, foreground_pid = win32process.GetWindowThreadProcessId(hwnd)
+
+    # Track if process is running at all
+    process_running = False
+
+    for proc in psutil.process_iter(['pid', 'name']):
+        if proc.info['name'] == process_name:
+            process_running = True
+            # Check if this process's PID matches foreground window PID
+            if proc.info['pid'] == foreground_pid:
+                print(f"{process_name} is running in the foreground.")
+                return False  # Process is in foreground
+            else:
+                # Found process but not foreground window PID
+                # Keep checking all processes
+                continue
+
+    if process_running:
+        # Process found but not foreground
+        print(f"{process_name} is running but not in the foreground.")
+        return True
+    else:
+        # Process not found at all
+        print(f"{process_name} is not running.")
+        return None
+
+
+
+def main():
+    time.sleep(5)
+    status = check_if_process_is_running_in_background("chrome.exe")
+    if status is True:
+        print("chrome.exe is running in the background.")
+    elif status is False:
+        print("chrome.exe is running in the foreground.")
+    else:
+        print("chrome.exe is not running.")
+
+main()

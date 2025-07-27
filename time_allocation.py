@@ -1,6 +1,7 @@
 #Library imports
-import _asyncio
+
 from datetime import datetime
+import sys
 import psutil
 ####   local import:   #####
 #variavle import
@@ -17,10 +18,10 @@ def ellapsed_time_and_allocated_time(session_start, is_productive):
     global allocated_time_to_unproductive_apps
     time_threshold = 300
     while True:
-        for app in ALL_APPS:
-            app_data = get_largest_memory_process(app)
+        for process in ALL_APPS:
+            app_data = get_largest_memory_process(process)
             if app_data:
-                if check_if_process_is_active(app, app_data.info["pid"]):
+                if check_if_process_is_active(process):
                     time_elapsed = (datetime.now() - session_start).total_seconds()
                     if is_productive and time_elapsed >= time_threshold:
                         allocated_time_to_unproductive_apps += 300
@@ -34,7 +35,7 @@ def ellapsed_time_and_allocated_time(session_start, is_productive):
                                 print(f"Error killing process: {e}")
                             
                             
-                if not check_if_process_is_active(app, app_data.info["pid"]):
+                if not check_if_process_is_active(process):
                     break
         break    
 
@@ -46,3 +47,14 @@ def kill_process_by_name(process_name):
                 print(f"Killed {process_name} (PID {proc.info['pid']})")
             except Exception as e:
                 print(f"Could not kill {process_name}: {e}")
+                
+def main():
+    """
+    Only for debug purposes pass an command line argument with the process name to kill it.
+    """
+    if len(sys.argv) >1:
+        kill_process_by_name(sys.argv[1])
+    else:
+        print("Sorry you didn't provide an argument")
+if __name__ == "__main__":
+    main()
