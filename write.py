@@ -81,6 +81,7 @@ def write_session_data_to_file(process_name, is_productive, session_start, sessi
     except Exception as e:
         print(f"Error loading data: {e}")
         data = {}
+    process_name = process_name.lower()
     session_start = session_start
     new_session_data = {
         "session_start": session_start,
@@ -100,7 +101,10 @@ def write_session_data_to_file(process_name, is_productive, session_start, sessi
 
            
 def session_end_stamp(process_name: str, session_end, session_start):
+    process_name = process_name.lower()
     data = app_usage._load_data()
+    if process_name not in list(data.keys()):
+        data[process_name] = {"sessions":[]}
     session_data = data[process_name]["sessions"]
     # Convert session_start to ISO string if it's a datetime object
     if isinstance(session_start, datetime.datetime):
@@ -109,7 +113,7 @@ def session_end_stamp(process_name: str, session_end, session_start):
         session_start_str = session_start  # assume already string
     
     for session in session_data:
-        if session["session_end"] is None and session_start_str == session["session_start"]:
+        if session["session_end"] is None and session_start_str == session["session_start"] and process_name in list(data.keys()):
             session["session_end"] = session_end
             session["was_marked"] = True
             break
@@ -124,5 +128,5 @@ def random_exit(process_name):
 
     """
     Todo 
-    Need to handle graceful shutdowns
+    Need to OS graceful shutdowns
     """

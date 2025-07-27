@@ -1,80 +1,60 @@
 import psutil
 import datetime, time
-
+import _asyncio
 # local imports
 from write import write_session_data_to_file, session_end_stamp
-
-
-PRODUCTIVE_APPS = ["firefox"]
-UNPRODUCTIVE_APPS = ["heroic"]
-
-ALL_APPS = PRODUCTIVE_APPS + UNPRODUCTIVE_APPS
+from time_allocation import ellapsed_time_and_allocated_time
+from utilities.process_utils import check_if_process_is_active, get_largest_memory_process, check_if_process_is_running_in_background
+from utilities.config import lowercase_list
+# variable imports
+from utilities.config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
 
 
 """Testing is Done"""
 active_tasks = {}
+
 def track_session_data(process_name, pid):
-    if pid not in active_tasks and check_if_process_is_active(process_name, pid):
+    process_name = process_name.lower()
+    if process_name not in active_tasks.keys() and check_if_process_is_active(process_name): #and check_if_process_is_running_in_background(process_name):
         # Process started
         session_start = datetime.datetime.now()
-        print(f"Session started: {session_start} | Process: {process_name} | PID: {pid}")
-        if process_name in PRODUCTIVE_APPS:
+        print(f"(++)Session started: {session_start} | Process: {process_name} | PID: {pid}")
+        if process_name in lowercase_list(PRODUCTIVE_APPS):
+            #ellapsed_time_and_allocated_time(session_start=session_start, process_name=process_name, is_productive=True)
             write_session_data_to_file(process_name, session_start=session_start, is_productive=True)
-        elif process_name in UNPRODUCTIVE_APPS:
+            
+            
+        elif process_name in lowercase_list(UNPRODUCTIVE_APPS):
+            # ellapsed_time_and_allocated_time(session_start=session_start, process_name=process_name, is_productive=True)
             write_session_data_to_file(process_name, session_start=session_start, is_productive=False)
         else:
             write_session_data_to_file(process_name, is_productive=None, session_start=session_start)
-        active_tasks[pid] = (process_name, session_start)
-        session_start = active_tasks[pid][1]
-
-
-"""Testing is done!!"""
-
-def get_largest_memory_process(process_name) -> psutil.Process | None: # get the pid based on memory allocation  
-    best_proc : psutil.Process | None = None
-    max_mem = 0
-
-    for proc in psutil.process_iter(attrs=["name", "pid", "memory_info"]):
-        try:
-            if proc.info["name"].lower() == process_name.lower():
-                mem_usage = proc.info["memory_info"].rss  # Resident Set Size in bytes
-                if mem_usage > max_mem:
-                    max_mem = mem_usage
-                    best_proc = proc
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            continue
-
-    return best_proc
-
-def check_if_process_is_active(process_name, pid : int) -> bool:
-    for proc in psutil.process_iter(attrs=["name", "pid"]):
-        if proc.info["name"].lower() == process_name.lower() and proc.info["pid"] == pid:
-            return True  # returns true if the process is running 
-    return False# returns False if the process is not running
-
-
+        active_tasks[process_name] = (pid, session_start)
+        session_start = active_tasks[process_name][1]
 
 def main(process_name):
-    # Check all running instances of the tracked app
-    for proc in psutil.process_iter(attrs=["name", "pid"]):
-        if proc.info["name"] and proc.info["name"].lower() == "code":
-            track_session_data(proc.info["name"], proc.info["pid"])
+    process_name = process_name.lower()
+    top_process = get_largest_memory_process(process_name)
+    
+    if top_process:
+        track_session_data(top_process.info["name"], top_process.pid)
 
-    # Detect if any tracked PIDs have disappeared (process ended)
-    current_pids = {proc.info["pid"] for proc in psutil.process_iter(attrs=["pid"])} # stores all the pids for workin processes
-    for pid in list(active_tasks.keys()):
-        if pid not in current_pids: #if the process pid is not in all process pids then it will run the code
+    current_processes = {proc.info["name"] for proc in psutil.process_iter(attrs=["name"])}
+    
+    for process in list(active_tasks.keys()):
+        if process not in current_processes:
             session_end = datetime.datetime.now()
-            print(f"Session ended: {session_end} | Process: {process_name} | PID: {pid}")  # marks the session end
-            session_end_stamp(process_name=process_name, session_end=session_end, session_start=active_tasks[pid][1])
-            process_name, session_start = active_tasks.pop(pid)
+            pid, session_start = active_tasks.pop(process)
+            print(f"(--) Session ended: {session_end} | Process: {process} | PID: {pid}")
+            session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
+
 
 if __name__ == "__main__":
     while True:
-        main("firefox")
-        time.sleep(1)
-        
-        
+        for apps in ALL_APPS:
+            main(apps)
+            time.sleep(1.5)
+            
         
         
         
