@@ -1,0 +1,9 @@
+{
+    "unproductive_apps": [
+        "Control_DX12.exe"
+    ],
+    "productive_apps": [
+        "Chrome.exe",
+        "Code.exe"
+    ]
+}

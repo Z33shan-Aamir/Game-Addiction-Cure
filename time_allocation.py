@@ -5,7 +5,7 @@ import psutil
 ####   local import:   #####
 #variavle import
 # from main import PRODUCTIVE_APPS, UNPRODUCTIVE_APPS, ALL_APPS, active_tasks
-from utilities.config import ALL_APPS
+from config import ALL_APPS
 #functions:
 from utilities.process_utils import check_if_process_is_active, get_largest_memory_process
 # from write import serialize_datetime
@@ -55,5 +55,3 @@ def main():
         kill_process_by_name(sys.argv[1])
     else:
         print("Sorry you didn't provide an argument")
-if __name__ == "__main__":
-    main()

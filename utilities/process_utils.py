@@ -87,4 +87,3 @@ def main():
     else:
         print("chrome.exe is not running.")
 
-main()

@@ -2,12 +2,13 @@ import psutil
 import datetime, time
 import _asyncio
 # local imports
+
 from write import write_session_data_to_file, session_end_stamp
 from time_allocation import ellapsed_time_and_allocated_time
 from utilities.process_utils import check_if_process_is_active, get_largest_memory_process, check_if_process_is_running_in_background
-from utilities.config import lowercase_list
+from config import lowercase_list
 # variable imports
-from utilities.config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
+from config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
 
 
 """Testing is Done"""
@@ -19,6 +20,7 @@ def track_session_data(process_name, pid):
         # Process started
         session_start = datetime.datetime.now()
         print(f"(++)Session started: {session_start} | Process: {process_name} | PID: {pid}")
+        active_tasks[process_name] = (pid, session_start)
         if process_name in lowercase_list(PRODUCTIVE_APPS):
             #ellapsed_time_and_allocated_time(session_start=session_start, process_name=process_name, is_productive=True)
             write_session_data_to_file(process_name, session_start=session_start, is_productive=True)
@@ -29,8 +31,6 @@ def track_session_data(process_name, pid):
             write_session_data_to_file(process_name, session_start=session_start, is_productive=False)
         else:
             write_session_data_to_file(process_name, is_productive=None, session_start=session_start)
-        active_tasks[process_name] = (pid, session_start)
-        session_start = active_tasks[process_name][1]
 
 def main(process_name):
     process_name = process_name.lower()
@@ -41,8 +41,8 @@ def main(process_name):
 
     current_processes = {proc.info["name"] for proc in psutil.process_iter(attrs=["name"])}
     
-    for process in list(active_tasks.keys()):
-        if process not in current_processes:
+    for process in  list(active_tasks.keys()):
+        if process not in current_processes and not(check_if_process_is_active(process)):
             session_end = datetime.datetime.now()
             pid, session_start = active_tasks.pop(process)
             print(f"(--) Session ended: {session_end} | Process: {process} | PID: {pid}")
@@ -53,8 +53,4 @@ if __name__ == "__main__":
     while True:
         for apps in ALL_APPS:
             main(apps)
-            time.sleep(1.5)
-            
-        
-        
-        
+            time.sleep(1)
