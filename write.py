@@ -120,8 +120,7 @@ def session_end_stamp(process_name: str, session_end, session_start):
     
     with open("./data/app_usage.json", "w") as f:
         json.dump(data, f, indent=4, default=serialize_datetime)
-    print("session end data has been written")
-
+    
 def random_exit(process_name):
     pass
 

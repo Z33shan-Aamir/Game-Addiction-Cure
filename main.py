@@ -9,6 +9,7 @@ from utilities.process_utils import check_if_process_is_active, get_largest_memo
 from config import lowercase_list
 # variable imports
 from config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
+import threading
 
 
 """Testing is Done"""
@@ -22,12 +23,31 @@ def track_session_data(process_name, pid):
         print(f"(++)Session started: {session_start} | Process: {process_name} | PID: {pid}")
         active_tasks[process_name] = (pid, session_start)
         if process_name in lowercase_list(PRODUCTIVE_APPS):
-            #ellapsed_time_and_allocated_time(session_start=session_start, process_name=process_name, is_productive=True)
+            # Run ellapsed_time_and_allocated_time concurrently using threading
+            threading.Thread(
+                target=ellapsed_time_and_allocated_time,
+                kwargs={
+                    "session_start": session_start,
+                    "is_productive": True,
+                    "app_data": get_largest_memory_process(process_name)
+                    
+                },
+                daemon=True
+            ).start()
             write_session_data_to_file(process_name, session_start=session_start, is_productive=True)
             
             
         elif process_name in lowercase_list(UNPRODUCTIVE_APPS):
             # ellapsed_time_and_allocated_time(session_start=session_start, process_name=process_name, is_productive=True)
+            threading.Thread(
+                target=ellapsed_time_and_allocated_time,
+                kwargs={
+                    "session_start": session_start,
+                    "is_productive": False,
+                    "app_data": get_largest_memory_process(process_name)
+                },
+                daemon=True
+            ).start()
             write_session_data_to_file(process_name, session_start=session_start, is_productive=False)
         else:
             write_session_data_to_file(process_name, is_productive=None, session_start=session_start)

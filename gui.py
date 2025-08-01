@@ -2,19 +2,24 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 # local imports
-from components import app_list
-
+from components import app_list, graph
 
 def main():
     root = ttk.Window(themename="cyborg")
-    root.geometry("600x350")
+    root.geometry("800x400")
     root.title("Game Addiction Cure")
-    hero_frame = ttk.Frame(master=root)
-    text_hero_frame = ttk.Label(master=hero_frame, text="Game Addiction Cure", font="Calibri 24 bold")
-    text_hero_frame.pack()
-    hero_frame.pack()
-    app_list.list_apps(root)
     
+
+    # Create a main frame to hold both the app list and the graph
+    main_frame = ttk.Frame(master=root)
+    main_frame.pack(fill="both", expand=True)
+
+    # Add the app list to the left side
+    app_list.list_apps(main_frame)
+
+    # Add the graph to the right side
+    graph.display_graph(main_frame)
+
     root.mainloop()
-    
+
 main()
