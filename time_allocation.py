@@ -22,7 +22,7 @@ def ellapsed_time_and_allocated_time(session_start, app_data, is_productive):
     process = app_data.info["name"]
     time_threshold = 1
     while True:
-       
+        time.sleep(1.5)
         app_data = get_largest_memory_process(process)
         if app_data:
             if check_if_process_is_active(process):
