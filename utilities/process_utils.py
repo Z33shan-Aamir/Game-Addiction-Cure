@@ -2,26 +2,26 @@ import win32gui, win32process
 import time
 import psutil
 
-# def get_largest_memory_process(process_name):
-#     best_proc = None
-#     max_mem = 0
-#     process_name = process_name.lower()
-#     for proc in psutil.process_iter(attrs=["name", "pid", "memory_info"]):
-#         try:
-#             if proc.info["name"].lower() == process_name:
-#                 mem_usage = proc.info["memory_info"].rss
-#                 if mem_usage > max_mem:
-#                     max_mem = mem_usage
-#                     best_proc = proc
-#         except (psutil.NoSuchProcess, psutil.AccessDenied):
-#             continue
-#     return best_proc
-
-
 def get_largest_memory_process(process_name):
+    best_proc = None
+    max_mem = 0
     process_name = process_name.lower()
-    processes = [proc for proc in psutil.process_iter(attrs=["name", "pid", "memory_info"]) if proc.info["name"].lower() == process_name]
-    return max(processes, key=lambda proc: proc.info["memory_info"].rss, default=None)
+    for proc in psutil.process_iter(attrs=["name", "pid", "memory_info"]):
+        try:
+            if proc.info["name"].lower() == process_name:
+                mem_usage = proc.info["memory_info"].rss
+                if mem_usage > max_mem:
+                    max_mem = mem_usage
+                    best_proc = proc
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+    return best_proc
+
+
+# def get_largest_memory_process(process_name):
+#     process_name = process_name.lower()
+#     processes = [proc for proc in psutil.process_iter(attrs=["name", "pid", "memory_info"]) if proc.info["name"].lower() == process_name]
+#     return max(processes, key=lambda proc: proc.info["memory_info"].rss, default=None)
 
 def check_if_process_is_active(process_name):
     """_summary_

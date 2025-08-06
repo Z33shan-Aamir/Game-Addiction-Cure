@@ -5,3 +5,4 @@ app_usage.json
 __pycache__
 tmo
 .vscode
+dummy.py

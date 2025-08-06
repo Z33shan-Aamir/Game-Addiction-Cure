@@ -2,7 +2,7 @@ import psutil
 import datetime, time
 # import threading
 from concurrent.futures import ThreadPoolExecutor
-
+from threading import Event
 # local imports
 
 from write import write_session_data_to_file, session_end_stamp
@@ -12,9 +12,11 @@ from config import lowercase_list
 # variable imports
 from config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
 
+# Used to communicate with the thread. In this app, used to kill the threads
+event = Event()  
 
-"""Testing is Done"""
 active_tasks = {}
+
 executor = ThreadPoolExecutor(max_workers=3)
 def track_session_data(process_name, pid):
     process_name = process_name.lower()
@@ -24,12 +26,16 @@ def track_session_data(process_name, pid):
         print(f"(++)Session started: {session_start} | Process: {process_name} | PID: {pid}")
         active_tasks[process_name] = (pid, session_start)
         if process_name in lowercase_list(PRODUCTIVE_APPS):
+            
             # Run ellapsed_time_and_allocated_time concurrently using threading
-            executor.submit(ellapsed_time_and_allocated_time, session_start, app_data=get_largest_memory_process(process_name), is_productive=True)
+            executor.submit(ellapsed_time_and_allocated_time, session_start, app_data=get_largest_memory_process(process_name),event=event, is_productive=True)
             write_session_data_to_file(process_name, session_start=session_start, is_productive=True)
             
             
         elif process_name in lowercase_list(UNPRODUCTIVE_APPS):
+            # sets the internal flag to true
+            # And this true is used to kill the thread (for productive apps)
+            event.set()
             #ellapsed_time_and_allocated_time(session_start=session_start, process_name=process_name, is_productive=True)
             executor.submit(ellapsed_time_and_allocated_time, session_start, app_data=get_largest_memory_process(process_name), is_productive=False)
             write_session_data_to_file(process_name, session_start=session_start, is_productive=False)
