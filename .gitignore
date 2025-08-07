@@ -6,3 +6,6 @@ __pycache__
 tmo
 .vscode
 dummy.py
+dist
+build
+main.spec
