@@ -1,6 +1,9 @@
 import json
 import datetime
 from typing import Dict, List, Optional,Any
+#local imports
+from config import UNPRODUCTIVE_APPS, lowercase_list
+
 
 def serialize_datetime(obj):
     if isinstance(obj, datetime.datetime):
@@ -100,9 +103,10 @@ def write_session_data_to_file(process_name, is_productive, session_start, sessi
         json.dump(data, f, indent=4,default=serialize_datetime)
 
            
-def session_end_stamp(process_name: str, session_end, session_start):
+def session_end_stamp(process_name: str, session_end, session_start)-> None:
     process_name = process_name.lower()
     data = app_usage._load_data()
+    
     if process_name not in list(data.keys()):
         data[process_name] = {"sessions":[]}
     session_data = data[process_name]["sessions"]

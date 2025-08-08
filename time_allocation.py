@@ -8,54 +8,64 @@ import psutil
 #variavle import
 from config import ALL_APPS
 #functions:
-from utilities.process_utils import check_if_process_is_active, get_largest_memory_process
+from utilities.process_utils import check_if_process_is_active
 # from write import serialize_datetime
 
 lock = threading.Lock()
 with lock:
     allocated_time_to_unproductive_apps = 0
 
-def ellapsed_time_and_allocated_time(session_start,app_data,is_productive, event = None ):
+def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_productive : bool, event : threading.Event | None = None, debug=True ):
     global allocated_time_to_unproductive_apps
     print(allocated_time_to_unproductive_apps)
     process = app_data.info["name"]
-    time_threshold = 1
+    if is_productive:
+        print(f"thread is running for productive process: {process}")
+    else:
+        print(f"thread is running for unproductive process: {process}")
+    time_threshold = 2
     while True:
-        time.sleep(1.5)
-        if is_productive:
-            print(f"thread is running for productive process: {process}")
-        else:
-            print(f"thread is running for unproductive process: {process}")
+        # time.sleep(1)
+        
         if app_data:
             if check_if_process_is_active(process):
                 time_elapsed = (datetime.now() - session_start).total_seconds()
                 if is_productive and time_elapsed >= time_threshold:
+                    time.sleep(2)
                     with lock:
-                        
-                        allocated_time_to_unproductive_apps += 0.5
-                        # print(f"(++)Time allocated to unporductive apps: {allocated_time_to_unproductive_apps} seconds")
-                    time_threshold += 1
+                        allocated_time_to_unproductive_apps += 1
+                        if debug:
+                            print(f"(++)Time allocated to unporductive apps: {allocated_time_to_unproductive_apps} seconds")
+                    time_threshold += 2
                     if event and event.is_set():
                         print("(??)Threading.Event was set to true meaning the unporductive thread is running and all productive threads will be down.")
-                        return 0
+                        break
                 elif not is_productive:
                     with lock:
-                        
-                        allocated_time_to_unproductive_apps = allocated_time_to_unproductive_apps - 1
-                        time.sleep(1)
-                        # print(f"(--)Time de-allocated to unporductive apps: {allocated_time_to_unproductive_apps} seconds")
+                        allocated_time_to_unproductive_apps = allocated_time_to_unproductive_apps - 2
+                        time.sleep(2)
+                        if debug:
+                            print(f"(--)Time de-allocated to unporductive apps: {allocated_time_to_unproductive_apps} seconds")
                     if allocated_time_to_unproductive_apps <= 0 and time_elapsed >= 20:
+                        allocated_time_to_unproductive_apps = 0
                         try:
-                            allocated_time_to_unproductive_apps=0
-                            print("Killing process in 60 seconds.....")
-                            time.sleep(60)
-                            app_data.kill()
+                            if debug:
+                                print("Killing process.....")
+                            else:
+                                print("Killing Process In 60 seconds")
+                                time.sleep(60)
+                            kill_process_by_name(process_name=process)
+                            print(f"Killed unproductive process: {process}")
                         except Exception as e:
                             print(f"Error killing process: {e}")
+                        # if event and event.is_set():
+                        #     event.clear()
                             
-        elif not check_if_process_is_active(process):  
-            # print("Thread was stopped because proces i no longer active")
-            break                 
+            elif not check_if_process_is_active(process):  
+                print("Thread was stopped because process is no longer active")
+                if event:
+                    event.clear()
+                break                 
             
          
 

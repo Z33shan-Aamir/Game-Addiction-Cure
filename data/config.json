@@ -1,4 +1,4 @@
 {
-    "unproductive_apps": ["chrome.exe"],
-    "productive_apps": ["code.exe"]
+    "productive_apps": ["code.exe"],
+    "unproductive_apps": ["chrome.exe"]
 }
