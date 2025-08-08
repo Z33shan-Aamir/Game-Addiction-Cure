@@ -117,7 +117,7 @@ def session_end_stamp(process_name: str, session_end, session_start)-> None:
         session_start_str = session_start  # assume already string
     
     for session in session_data:
-        if session["session_end"] is None and session_start_str == session["session_start"] and process_name in list(data.keys()):
+        if session["session_end"] is None and session_start_str == session["session_start"] and process_name in list(data.keys()) and not(session["was_marked"]):
             session["session_end"] = session_end
             session["was_marked"] = True
             break
