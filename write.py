@@ -130,6 +130,6 @@ def random_exit(process_name):
 
 
     """
-    Todo 
-    Need to OS graceful shutdowns
+    TODO
+    Need to implement OS graceful shutdowns
     """

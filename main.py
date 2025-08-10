@@ -17,7 +17,7 @@ event = Event()
 active_tasks = {}
 active_unproductive = []
 executor = ThreadPoolExecutor(max_workers=3)
-def check_and_remove_unproductive_tasks(debug=True):
+def check_and_remove_unproductive_tasks(debug=False):
     time.sleep(2)
     for app in UNPRODUCTIVE_APPS:
         if check_if_process_is_active(app):

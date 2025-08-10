@@ -16,7 +16,7 @@ lock = threading.Lock()
 with lock:
     allocated_time_to_unproductive_apps = 20
 
-def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_productive : bool, event : threading.Event | None = None, debug=True ):
+def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_productive : bool, event : threading.Event | None = None, debug=False):
     global allocated_time_to_unproductive_apps
     print(allocated_time_to_unproductive_apps)
     process = app_data.info["name"]
@@ -54,6 +54,8 @@ def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_produc
                     if allocated_time_to_unproductive_apps <= 0 and time_elapsed >= 20:
                         allocated_time_to_unproductive_apps = 0
                         try:
+                            # TODO
+                            # Create a Pop up when the app is about to be closed
                             if debug:
                                 print("Killing process.....")
                             else:
