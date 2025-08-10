@@ -14,32 +14,32 @@ from config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
 
 # Used to communicate with the thread. In this app, used to kill the threads
 event = Event()
-global active_tasks
 active_tasks = {}
-active_unproductive = {}
+active_unproductive = []
 executor = ThreadPoolExecutor(max_workers=3)
-def check_unproductive_tasks(debug=True):
+def check_and_remove_unproductive_tasks(debug=True):
+    time.sleep(2)
     for app in UNPRODUCTIVE_APPS:
         if check_if_process_is_active(app):
-            if debug:
-                print(app, "was added to active_unproductive")
-            if app in active_unproductive:
-                pass
-            else:
-                active_unproductive[app] = True
-        elif not check_if_process_is_active(app):
-            try:
+            if app not in active_unproductive:
+                active_unproductive.append(app)
                 if debug:
-                    print(app, "was removed from active_unproductive")
-                active_unproductive.pop(app)
-            except:
-                pass
+                    print(app, "was added to active_unproductive")
+
+        elif not check_if_process_is_active(app) and app in active_unproductive:
+            if debug:
+                print(app, "was removed from active_unproductive")
+            active_unproductive.remove(app)
     if not(active_unproductive):
         event.clear()
+    if active_unproductive:
+        event.set()
 def remove_unactive_tasks():
-    for app in active_tasks:
-        if app is not(check_if_process_is_active(app)):
+    time.sleep(2)
+    for app in list(active_tasks.keys()):
+        if app is not(check_if_process_is_active(app)) and app in active_tasks: 
             active_tasks.pop(app)
+            
 def track_session_data(process_name, pid):
     process_name = process_name.lower()
     if process_name not in active_tasks.keys() and check_if_process_is_active(process_name): #and check_if_process_is_running_in_background(process_name):
@@ -73,7 +73,7 @@ def track_session_data(process_name, pid):
 
 def main(process_name):
         process_name = process_name.lower()
-    
+
         current_processes = {proc.info["name"] for proc in psutil.process_iter(attrs=["name"])}
         
         top_process = get_largest_memory_process(process_name)
@@ -82,14 +82,13 @@ def main(process_name):
             track_session_data(top_process.info["name"], top_process.info["pid"])
 
         # I may remove this        
-        # for process in  active_tasks:
+        for process in  list(active_tasks.keys()):
             
-        #     if process not in current_processes and not(check_if_process_is_active(process)):
-        #         session_end = datetime.datetime.now().isoformat()
-        #         pid, session_start = active_tasks.pop(process)
-        #         print(f"(--) Session ended: {session_end} | Process: {process} | PID: {pid}")
+            if process not in current_processes and not(check_if_process_is_active(process)):
+                active_tasks.pop(process)
+                # print(f"(--) Session ended: {session_end} | Process: {process} | PID: {pid}")
                 
-        #         session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
+                # session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
 
 
 if __name__ == "__main__":
@@ -98,17 +97,18 @@ if __name__ == "__main__":
         print("App is now running")
         event = Event()  
         while True:
-            check_unproductive_tasks()
-            if event.is_set():
-                print("Waiting for unproductive app thread to finish...")
-                time.sleep(3)  # Wait for the event to be cleared
-                continue
+            check_and_remove_unproductive_tasks()
+
+            # if event.is_set():
+            #     print("Waiting for unproductive app thread to finish...")
+            #     time.sleep(3)  # Wait for the event to be cleared
+            #     continue
             if not(event.is_set()):
                 for app in PRODUCTIVE_APPS:
                     time.sleep(1.5)
                     main(app)
             for app in UNPRODUCTIVE_APPS:
-                time.sleep(1.5)
+                time.sleep(2)
                 main(app)
             
                 

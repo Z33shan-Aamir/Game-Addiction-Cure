@@ -65,10 +65,13 @@ def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_produc
                                 session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
                                 print(f"(--) Session ended: {session_end} | Process: {process} | PID: {app_data.info["pid"]}")
                             print(f"Killed unproductive process: {process}")
+                            break
                         except Exception as e:
                             print(f"Error killing process: {e}")
-                        if event and event.is_set():
-                            event.clear()
+                            
+                        # ----- EXPERIMENT ----
+                        # if event and event.is_set():
+                        #     event.clear()
                             
             elif not check_if_process_is_active(process):  
                 print("Thread was stopped because process is no longer active")
@@ -76,8 +79,10 @@ def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_produc
                     session_end = datetime.now().isoformat()
                     session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
                     print(f"(--) Session ended: {session_end} | Process: {process} | PID: {app_data.info["pid"]}")
-                if event:
-                    event.clear()
+                                        
+                # ----- EXPERIMENT ----
+                # if event:
+                #     event.clear()
                 break                 
             
          
