@@ -6,26 +6,28 @@ The **Game Addiction Cure** project is designed to monitor and manage applicatio
 ---
 
 ## Features
-- **Track Application Usage**:
-  - Logs session start and end times for applications.
-  - Differentiates between productive and unproductive applications.
-- **Kill Unproductive Applications**:
-  - Automatically terminates unproductive applications if usage exceeds allocated time.
-- **Session Data Management**:
-  - Stores session data in a JSON file for persistent tracking.
-- **Foreground and Background Process Detection**:
-  - Identifies whether an application is running in the foreground or background.
-
+- Tracks productive and unproductive applications.
+- Logs session start and end times for each application.
+- Allocates time dynamically to unproductive apps.
+- Terminates unproductive apps when their allocated time is exceeded.
+- Uses threading for concurrent monitoring of multiple applications.
 ---
 
-## File Structure
-### **Main Files**
-- `main.py`: Entry point for tracking application usage and managing sessions.
-- `time_allocation.py`: Handles time allocation for applications and terminates unproductive apps.
-- `write.py`: Manages session data storage and retrieval in JSON format.
-- `utilities/config.py`: Contains configuration for productive and unproductive applications.
-- `utilities/process_utils.py`: Provides utility functions for process management.
-
+## Project Structure
+GameAddictionCure/
+│
+├── main.py                  # Entry point of the application
+├── time_allocation.py       # Handles time allocation and session management
+├── write.py                 # Handles session data logging
+├── config.py                # Loads app configuration
+├── utilities/
+│   └── process_utils.py     # Utility functions for process management
+├── data/
+│   ├── config.json          # Configuration file for app tracking
+│   └── app_usage.json       # Logs app usage data
+└── dist/
+    └── data/
+        └── config.json      # Backup configuration file
 ---
 
 ## Installation
@@ -35,23 +37,39 @@ The **Game Addiction Cure** project is designed to monitor and manage applicatio
 ```
 2. Install dependencies:
 ```bash
-pip install psutil pywin32
+pip install -r requirements.txt
 ```
+
 # Usage
 ### Run the Application
 To start tracking application usage:
+
 ```bash
 python main.py
 ```
-Kill a Process
+
+### Kill a Process
 To manually kill a process by name:
 ```bash
 python time_allocation.py <name-of-process>
 ```
 Replace `<name-of-process>` with the name of process which will be like `notepad.exe` on windows and `steam` on linux
+
+### Degugging:
+  - Enable debug mode in `check_and_remove_unproductive_tasks(debug=True)` to see detailed logs.
+
+### Add/Remove Apps
+  - Update `data/config.json` to modify the list of productive and unproductive apps.
 # Configuration
-Productive and Unproductive Applications
-Edit the utilities/config.py file to define productive and unproductive applications:
+```JSON
+{
+    "productive_apps": ["code.exe"],
+    "unproductive_apps": ["chrome.exe"]
+}
+```
+- `productive_apps`: List of apps considered productive.
+- `unproductive_apps`: List of apps considered unproductive.
+---
 
 # Functions
 Main Functions
@@ -67,8 +85,10 @@ Monitors active processes, manages session data, and coordinates tracking of pro
 
 ### `time_allocation.py`
 
-#### `ellapsed_time_and_allocated_time(session_start, is_productive)`
-Calculates elapsed and allocated time for application sessions. Terminates unproductive applications if their usage exceeds predefined thresholds.
+#### `ellapsed_time_and_allocated_time(session_start, app_data, is_productive, event)`
+- Tracks elapsed time for productive and unproductive apps.
+- Dynamically adjusts allocated time for unproductive apps.
+- Terminates unproductive apps when their time is exceeded.
 
 #### `kill_process_by_name(process_name)`
 Terminates all processes matching the specified name.
@@ -117,10 +137,30 @@ Session data is stored in `app_usage.json` with the following structure:
 }
 ```
 ---
+# How It Works
+1. Initialization:
+
+  - The app reads the configuration file to load productive and unproductive apps.
+  - Threads are initialized for concurrent monitoring.
+2. Monitoring:
+
+  - Active processes are checked periodically.
+  - Productive and unproductive apps are tracked separately.
+
+3. Time Management:
+
+  - Productive apps increase the allocated time for unproductive apps.
+  - Unproductive apps decrease their allocated time.
+4. Termination:
+
+  -If an unproductive app exceeds its allocated time, it is terminated.
+
+---
+
 # Future Improvements
 - Implement OS-level graceful shutdowns.
 - Add support for real-time notifications or pop-ups.
 - Enhance session data visualization.
 - Create a GUI for the app and make it run as a daemon
-
+- Add Passive Aggressive Quote/Sentences To make you not spend time on Useless stuff
 
