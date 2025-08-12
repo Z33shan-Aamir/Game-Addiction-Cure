@@ -15,6 +15,7 @@ The **Game Addiction Cure** project is designed to monitor and manage applicatio
 
 ## Project Structure
 
+```
 GameAddictionCure/
 │
 ├── main.py                  # Entry point of the application
@@ -29,6 +30,7 @@ GameAddictionCure/
 └── dist/
     └── data/
         └── config.json      # Backup configuration file
+```
 ---
 
 ## Installation
