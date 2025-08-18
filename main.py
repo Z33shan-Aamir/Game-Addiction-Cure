@@ -7,7 +7,7 @@ from threading import Event
 
 from write import write_session_data_to_file, session_end_stamp
 from time_allocation import ellapsed_time_and_allocated_time
-from utilities.process_utils import check_if_process_is_active, get_largest_memory_process, check_if_process_is_running_in_background
+from utilities.process_utils import check_if_process_is_active, get_largest_memory_process
 from config import lowercase_list
 # variable imports
 from config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS

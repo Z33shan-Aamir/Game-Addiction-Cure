@@ -16,7 +16,7 @@ lock = threading.Lock()
 with lock:
     allocated_time_to_unproductive_apps = 20
 
-def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_productive : bool, event : threading.Event | None = None, debug=False):
+def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_productive : bool, event : threading.Event | None = None, debug=True):
     global allocated_time_to_unproductive_apps
     print(allocated_time_to_unproductive_apps)
     process = app_data.info["name"]
