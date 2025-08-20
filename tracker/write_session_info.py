@@ -2,7 +2,7 @@ import json
 import datetime
 from typing import Dict, List, Optional,Any
 #local imports
-from config import UNPRODUCTIVE_APPS, lowercase_list
+from tracker.load_config import UNPRODUCTIVE_APPS, lowercase_list
 
 
 def serialize_datetime(obj):
@@ -11,7 +11,7 @@ def serialize_datetime(obj):
     raise TypeError("Type not serializable")
 
 class AppUsageData:
-    def __init__(self, file: str = "./data/app_usage.json") -> None:
+    def __init__(self, file: str = "./tracker/data/app_usage.json") -> None:
         """
         Initialize the AppUsageData instance.
 
@@ -99,7 +99,7 @@ def write_session_data_to_file(process_name, is_productive, session_start, sessi
     # Append the new session data to the sessions list
     data[process_name]["sessions"].append(new_session_data)
     # Write updated data back to the file
-    with open("./data/app_usage.json", "w") as f:
+    with open("./tracker/data/app_usage.json", "w") as f:
         json.dump(data, f, indent=4,default=serialize_datetime)
 
            
@@ -122,7 +122,7 @@ def session_end_stamp(process_name: str, session_end, session_start)-> None:
             session["was_marked"] = True
             break
     
-    with open("./data/app_usage.json", "w") as f:
+    with open("./tracker/data/app_usage.json", "w") as f:
         json.dump(data, f, indent=4, default=serialize_datetime)
     
 def random_exit(process_name):

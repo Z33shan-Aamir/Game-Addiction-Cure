@@ -5,12 +5,12 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Event
 # local imports
 
-from write import write_session_data_to_file, session_end_stamp
-from time_allocation import ellapsed_time_and_allocated_time
-from utilities.process_utils import check_if_process_is_active, get_largest_memory_process
-from config import lowercase_list
+from tracker.write_session_info import write_session_data_to_file, session_end_stamp
+from tracker.time_allocation import ellapsed_time_and_allocated_time
+from tracker.process_utils import check_if_process_is_active, get_largest_memory_process
+from tracker.load_config import lowercase_list
 # variable imports
-from config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
+from tracker.load_config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
 
 # Used to communicate with the thread. In this app, used to kill the threads
 event = Event()
@@ -32,6 +32,8 @@ def check_and_remove_unproductive_tasks(debug=False):
             active_unproductive.remove(app)
     if not(active_unproductive):
         event.clear()
+        print("(??) Event was cleared")
+
     if active_unproductive:
         event.set()
 def remove_unactive_tasks():
@@ -71,7 +73,7 @@ def track_session_data(process_name, pid):
             write_session_data_to_file(process_name, is_productive=None, session_start=session_start)
 
 
-def main(process_name):
+def tracker(process_name):
         process_name = process_name.lower()
 
         current_processes = {proc.info["name"] for proc in psutil.process_iter(attrs=["name"])}
@@ -90,32 +92,25 @@ def main(process_name):
                 
                 # session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
 
-
-if __name__ == "__main__":
-    try:
-        
-        print("App is now running")
-        event = Event()  
-        while True:
-            check_and_remove_unproductive_tasks()
-
-            # if event.is_set():
-            #     print("Waiting for unproductive app thread to finish...")
-            #     time.sleep(3)  # Wait for the event to be cleared
-            #     continue
+def main():
+    
+        try:
             if not(event.is_set()):
                 for app in PRODUCTIVE_APPS:
-                    time.sleep(1.5)
-                    main(app)
+                        time.sleep(1.5)
+                        tracker(app)
             for app in UNPRODUCTIVE_APPS:
                 time.sleep(2)
-                main(app)
+                tracker(app)
+                    
+        except KeyboardInterrupt:
+            executor.shutdown(wait=False)
             
-                
-            
-                
-    except KeyboardInterrupt:
-        executor.shutdown(wait=False)
+def run():
+    print("App is running")            
+    while True:
+        check_and_remove_unproductive_tasks()
+        main()
 # import cProfile
 # import pstats
 # with cProfile.Profile() as profile:

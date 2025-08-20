@@ -6,10 +6,10 @@ import time
 import psutil
 ####   local import:   #####
 #variavle import
-from config import ALL_APPS
+from tracker.load_config import ALL_APPS
 #local function import:
-from utilities.process_utils import check_if_process_is_active
-from write import session_end_stamp
+from tracker.process_utils import check_if_process_is_active
+from tracker.write_session_info import session_end_stamp
 # from write import serialize_datetime
 
 lock = threading.Lock()

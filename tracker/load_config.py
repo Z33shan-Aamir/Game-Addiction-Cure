@@ -10,11 +10,11 @@ def get_app_names_for_tracking()-> dict:
         dict: A dictionary of format app_type: [app_names]
     """
     try:
-        with open("./data/config.json", "r") as f:
+        with open("tracker/data/config.json", "r") as f:
             return json.load(f)
     except:
         print("file Not found")
-        with open("../data/config.json", "w") as f:
+        with open("tracker/data/config.json", "w") as f:
             default_format = {
                 "productive_apps": [],
                 "unproductive_apps": []

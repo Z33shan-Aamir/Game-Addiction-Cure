@@ -57,6 +57,10 @@ To manually kill a process by name:
 python time_allocation.py <name-of-process>
 ```
 Replace `<name-of-process>` with the name of process which will be like `notepad.exe` on windows and `steam` on linux
+> [!warning]
+> In case of linux using the name of the process may not work.
+> Instead use the name for the app used in `htop` or `btop` or any other resource monitor
+> for example command to launch chrome is `google-chrome-stable` but in the resource monitor it's `chrome`
 
 ### Degugging:
   - Enable debug mode in `check_and_remove_unproductive_tasks(debug=True)` to see detailed logs.
@@ -64,6 +68,8 @@ Replace `<name-of-process>` with the name of process which will be like `notepad
 ### Add/Remove Apps
   - Update `data/config.json` to modify the list of productive and unproductive apps.
 # Configuration
+
+
 ```JSON
 {
     "productive_apps": ["code.exe"],
