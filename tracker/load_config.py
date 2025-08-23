@@ -2,6 +2,8 @@
 import json
 # local imports 
 
+FILE_PATH_CONFIG = "./tracker/data/config.json"
+FILE_PATH_DATA = "./tracker/data/app_usage.json"
 
 def get_app_names_for_tracking()-> dict: 
     """_summary_
@@ -10,11 +12,11 @@ def get_app_names_for_tracking()-> dict:
         dict: A dictionary of format app_type: [app_names]
     """
     try:
-        with open("tracker/data/config.json", "r") as f:
+        with open(FILE_PATH_CONFIG, "r") as f:
             return json.load(f)
     except:
         print("file Not found")
-        with open("tracker/data/config.json", "w") as f:
+        with open(FILE_PATH_CONFIG, "w") as f:
             default_format = {
                 "productive_apps": [],
                 "unproductive_apps": []
@@ -28,6 +30,7 @@ app_name_data = get_app_names_for_tracking()
 PRODUCTIVE_APPS = app_name_data["productive_apps"]
 UNPRODUCTIVE_APPS = app_name_data["unproductive_apps"]
 ALL_APPS = PRODUCTIVE_APPS + UNPRODUCTIVE_APPS
+
 
 def lowercase_list(input_list):
     """Converts all string elements in a list to lowercase.
