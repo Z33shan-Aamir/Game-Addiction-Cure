@@ -16,7 +16,7 @@ lock = threading.Lock()
 with lock:
     allocated_time_to_unproductive_apps = 20
 
-def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_productive : bool, event : threading.Event | None = None, debug=True):
+def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_productive : bool | None, event : threading.Event | None = None, debug=True):
     global allocated_time_to_unproductive_apps
     print(allocated_time_to_unproductive_apps)
     process = app_data.info["name"]
@@ -27,11 +27,11 @@ def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_produc
     time_threshold = 2
     while True:
         # time.sleep(1)
-        if event and event.is_set() and is_productive:
+        if event and event.is_set() and is_productive and app_data:
             print("(??)Threading.Event was set to true meaning the unporductive thread is running and all productive threads will be down.")
             with lock:
                 session_end = datetime.now().isoformat()
-                session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
+                # session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
                 print(f"(--) Session ended: {session_end} | Process: {process} | PID: {app_data.info["pid"]}")
             break
         if app_data:
@@ -44,8 +44,11 @@ def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_produc
                         if debug:
                             print(f"(++)Time allocated to unporductive apps: {allocated_time_to_unproductive_apps} seconds")
                     time_threshold += 2
-                    
-                elif not is_productive:
+                if is_productive is None and time_elapsed >= time_threshold:
+                    time.sleep(2)
+                    print("Neutral app is running")
+                    # TODO: Remove this code and handle 
+                elif  is_productive is False:
                     with lock:
                         allocated_time_to_unproductive_apps = allocated_time_to_unproductive_apps - 2
                         time.sleep(2)
@@ -64,7 +67,7 @@ def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_produc
                             kill_process_by_name(process_name=process)
                             with lock:
                                 session_end = datetime.now().isoformat()
-                                session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
+                                # session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
                                 print(f"(--) Session ended: {session_end} | Process: {process} | PID: {app_data.info["pid"]}")
                             print(f"Killed unproductive process: {process}")
                             break
@@ -79,8 +82,8 @@ def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_produc
                 print("Thread was stopped because process is no longer active")
                 with lock:
                     session_end = datetime.now().isoformat()
-                    session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
-                    print(f"(--) Session ended: {session_end} | Process: {process} | PID: {app_data.info["pid"]}")
+                    # session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
+                    # print(f"(--) Session ended: {session_end} | Process: {process} | PID: {app_data.info["pid"]}")
                                         
                 # ----- EXPERIMENT ----
                 # if event:

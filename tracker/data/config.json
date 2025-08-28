@@ -1,4 +1,5 @@
 {
     "productive_apps": ["code"],
-    "unproductive_apps": ["chrome"]
+    "unproductive_apps": ["chrome"],
+    "neutral_apps": ["zen-bin"]
 }

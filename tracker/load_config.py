@@ -19,7 +19,8 @@ def get_app_names_for_tracking()-> dict:
         with open(FILE_PATH_CONFIG, "w") as f:
             default_format = {
                 "productive_apps": [],
-                "unproductive_apps": []
+                "unproductive_apps": [],
+                "neutral_apps": []
             }
             json.dump(default_format, f, indent=4)
             return default_format
@@ -29,6 +30,7 @@ app_name_data = get_app_names_for_tracking()
 
 PRODUCTIVE_APPS = app_name_data["productive_apps"]
 UNPRODUCTIVE_APPS = app_name_data["unproductive_apps"]
+NEUTRAL_APPS= app_name_data["neutral_apps"]
 ALL_APPS = PRODUCTIVE_APPS + UNPRODUCTIVE_APPS
 
 

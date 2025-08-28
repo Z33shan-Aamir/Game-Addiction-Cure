@@ -1,5 +1,5 @@
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable, Header, Footer, Static, Button,Markdown
+from textual.widgets import DataTable, Header, Footer, Static, Button,Markdown, Input
 from textual.containers import Vertical, Horizontal, Center, Container
 from rich.text import Text
 # loacl imports
@@ -27,19 +27,22 @@ class DisplayTableOfApp(Static):
         with Container(classes="data-table"):
             yield DataTable( )  # Create the table widget
         with Container(classes="button-container"):
+            with Vertical():
+                yield Input(placeholder="Enter App Name", classes="app-name-input")
             with Horizontal():
                     yield Button(
                         "Add App",
                         variant="primary",
-                        tooltip="Press to add new apps",
-                        action="notify('Add button was clicked')"
+                        tooltip="Press to add new apps in the app.",
+                        action="notify('App was added')"
                     )
                     yield Button(
                         "Remove App",
                         variant="warning",
-                        tooltip="Press to add new apps",
-                        action="notify('Add button was clicked')"
-                        )   
+                        tooltip="Press to Remove apps in the input box.",
+                        action="notify('App was removed')"
+                        )
+               
     
     def on_mount(self) -> None:
         
