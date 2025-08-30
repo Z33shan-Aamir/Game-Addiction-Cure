@@ -4,6 +4,8 @@
 The **Game Addiction Cure** project is designed to monitor and manage application usage on a system. It tracks productive and unproductive applications, logs session data, and can terminate unproductive applications if certain thresholds are exceeded.
 
 ---
+> [!WARNING]
+> Use `poetry run app-tracker` command to run the app.
 
 ## Features
 - Tracks productive and unproductive applications.
