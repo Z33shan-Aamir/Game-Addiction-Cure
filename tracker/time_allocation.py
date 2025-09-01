@@ -9,7 +9,7 @@ import psutil
 from tracker.load_config import ALL_APPS
 #local function import:
 from tracker.process_utils import check_if_process_is_active
-from tracker.write_session_info import session_end_stamp
+# from tracker.write_session_info import session_end_stamp
 # from write import serialize_datetime
 
 lock = threading.Lock()
@@ -27,22 +27,26 @@ def ellapsed_time_and_allocated_time(session_start : datetime,app_data,is_produc
     time_threshold = 2
     while True:
         # time.sleep(1)
-        if event and event.is_set() and is_productive and app_data:
-            print("(??)Threading.Event was set to true meaning the unporductive thread is running and all productive threads will be down.")
-            with lock:
-                session_end = datetime.now().isoformat()
-                # session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
-                print(f"(--) Session ended: {session_end} | Process: {process} | PID: {app_data.info["pid"]}")
-            break
+        # if event and event.is_set() and is_productive and app_data:
+        #     print("(??)Threading.Event was set to true meaning the unporductive thread is running and all productive threads will be down.")
+        #     with lock:
+        #         session_end = datetime.now().isoformat()
+        #         # session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
+        #         print(f"(--) Session ended: {session_end} | Process: {process} | PID: {app_data.info["pid"]}")
+        #     break
         if app_data:
             if check_if_process_is_active(process):
                 time_elapsed = (datetime.now() - session_start).total_seconds()
                 if is_productive and time_elapsed >= time_threshold:
                     time.sleep(2)
                     with lock:
-                        allocated_time_to_unproductive_apps += 1
-                        if debug:
-                            print(f"(++)Time allocated to unporductive apps: {allocated_time_to_unproductive_apps} seconds")
+                        if event and not(event.is_set()):
+                            allocated_time_to_unproductive_apps += 1
+                            if debug:
+                                print(f"(++)Time allocated to unporductive apps: {allocated_time_to_unproductive_apps} seconds")
+                        else:
+                            if debug:
+                                print(f"(??)Time was not allocated because event.is_set()")
                     time_threshold += 2
                 if is_productive is None and time_elapsed >= time_threshold:
                     time.sleep(2)

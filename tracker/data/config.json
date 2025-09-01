@@ -1,5 +1,5 @@
 {
-    "productive_apps": ["code"],
-    "unproductive_apps": ["chrome"],
-    "neutral_apps": ["zen-bin"]
+    "productive_apps": ["code.exe"],
+    "unproductive_apps": ["chrome.exe"],
+    "neutral_apps": ["warp.exe"]
 }

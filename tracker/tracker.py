@@ -27,16 +27,15 @@ executors = [] # contains all the executors
 def check_and_remove_unproductive_tasks(debug=False):
     time.sleep(2)
     for app in UNPRODUCTIVE_APPS:
-        if check_if_process_is_active(app):
-            if app not in active_unproductive:
-                active_unproductive.append(app)
-                if debug:
-                    print(app, "was added to active_unproductive")
+        if check_if_process_is_active(app) and app not in active_unproductive:            
+            active_unproductive.append(app)
+            if debug:
+                print(app, "was added to active_unproductive")
 
         elif not check_if_process_is_active(app) and app in active_unproductive:
+            active_unproductive.remove(app)
             if debug:
                 print(app, "was removed from active_unproductive")
-            active_unproductive.remove(app)
     if not(active_unproductive):
         event.clear()
         print("(??) Event was cleared")
@@ -68,11 +67,11 @@ def track_session_data(process_name, pid):
             for app in PRODUCTIVE_APPS:
                  if app in active_tasks:
                     session_start = active_tasks[app][1]
-                    active_tasks.pop(app)
-                    session_end_stamp(app, session_end=datetime.datetime.now().isoformat(), session_start=session_start)
+                    # active_tasks.pop(app)
+                    # session_end_stamp(app, session_end=datetime.datetime.now().isoformat(), session_start=session_start)
             # sets the internal flag to true
             # And this true is used to kill the thread (for productive apps)
-            event.set()
+            event.set() 
             #ellapsed_time_and_allocated_time(session_start=session_start, process_name=process_name, is_productive=True)
             executor.submit(ellapsed_time_and_allocated_time, session_start, app_data=get_largest_memory_process(process_name), is_productive=False, event=event)
             write_session_data_to_file(process_name, session_start=session_start, is_productive=False)
@@ -103,22 +102,22 @@ def tracker(process_name):
         for process in  list(active_tasks.keys()):
             
             if process not in current_processes and not(check_if_process_is_active(process)):
-                print(active_tasks[process])
+                # print(active_tasks[process])
                 pid, session_start = active_tasks.pop(process)
                 session_end = datetime.datetime.now().isoformat()
-                print(f"(--) Session ended: {session_end} | Process: {process}")
+                print(f"(--) Session ended: {session_end} | Process: {process} | pid: {pid}")
                 session_end_stamp(process_name=process, session_end=session_end, session_start=session_start)
 
 def main():
     
         try:
-            if not(event.is_set()):
-                for app in PRODUCTIVE_APPS:
-                    time.sleep(2)
-                    tracker(app)
-                for app in NEUTRAL_APPS:
-                    time.sleep(2)
-                    tracker(app)
+            
+            for app in PRODUCTIVE_APPS:
+                time.sleep(2)
+                tracker(app)
+            for app in NEUTRAL_APPS:
+                time.sleep(2)
+                tracker(app)
             for app in UNPRODUCTIVE_APPS:
                 time.sleep(2)
                 tracker(app)

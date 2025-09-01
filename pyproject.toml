@@ -10,7 +10,8 @@ requires-python = ">=3.13,<4.0.0"
 dependencies = [
     "psutils (>=3.3.11,<4.0.0)",
     "textual (>=5.3.0,<6.0.0)",
-    "textual-plotext (>=1.0.1,<2.0.0)"
+    "textual-plotext (>=1.0.1,<2.0.0)",
+    "psutil (>=7.0.0,<8.0.0)"
 ]
 
 
