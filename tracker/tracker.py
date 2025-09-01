@@ -56,7 +56,7 @@ def track_session_data(process_name, pid):
         print(f"(++)Session started: {session_start} | Process: {process_name}")
         
         active_tasks[process_name] = (pid, session_start)
-        if process_name in lowercase_list(PRODUCTIVE_APPS) and not(event.is_set()):
+        if process_name in lowercase_list(PRODUCTIVE_APPS):
             # Run ellapsed_time_and_allocated_time concurrently using threading
             executor.submit(ellapsed_time_and_allocated_time, session_start, app_data=get_largest_memory_process(process_name),event=event, is_productive=True)
             write_session_data_to_file(process_name, session_start=session_start, is_productive=True)
@@ -64,14 +64,16 @@ def track_session_data(process_name, pid):
             
         elif process_name in lowercase_list(UNPRODUCTIVE_APPS):
             active_tasks[process_name] = (pid, session_start)
-            for app in PRODUCTIVE_APPS:
-                 if app in active_tasks:
-                    session_start = active_tasks[app][1]
+            # for app in PRODUCTIVE_APPS:
+            #      if app in active_tasks:
+            #         session_start = active_tasks[app][1]
                     # active_tasks.pop(app)
                     # session_end_stamp(app, session_end=datetime.datetime.now().isoformat(), session_start=session_start)
             # sets the internal flag to true
             # And this true is used to kill the thread (for productive apps)
             event.set() 
+            active_tasks[process_name]= [pid, session_start]
+
             #ellapsed_time_and_allocated_time(session_start=session_start, process_name=process_name, is_productive=True)
             executor.submit(ellapsed_time_and_allocated_time, session_start, app_data=get_largest_memory_process(process_name), is_productive=False, event=event)
             write_session_data_to_file(process_name, session_start=session_start, is_productive=False)
