@@ -1,6 +1,6 @@
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable, Header, Footer, Static, Button,Markdown, Input
-from textual.containers import Vertical, Horizontal, Center, Container
+from textual.widgets import DataTable, Header, Footer, Static, Button,Markdown, Input, Label
+from textual.containers import Vertical, Horizontal, Center, Container, Grid
 from rich.text import Text
 # loacl imports
 from tracker.load_config import ALL_APPS, PRODUCTIVE_APPS, UNPRODUCTIVE_APPS
@@ -24,7 +24,7 @@ def app_list_for_table() -> None:
 class DisplayTableOfApp(Static):
     """Simple app showing a table from a list"""
     def compose(self) -> ComposeResult:
-        with Container(classes="data-table"):
+        with Container(classes="data-table-container"):
             yield DataTable( )  # Create the table widget
         with Container(classes="button-container"):
             with Vertical():
@@ -67,20 +67,21 @@ class AppUsage(Static):
         yield Static("Hellpo")
 
 class TrackerTUI(App):
-    CSS_PATH = "styles/styles.tcss"
+    CSS_PATH = "styles/styles.css"
     BINDINGS = [
         ("d", "toggle_dark","Toggle Dark/Light mode")
     ]
     def compose(self):
         yield Header()
-        with Horizontal():
-            with Container(classes="container table-of-app-container") as panel:
+        # yield Markdown("# hello", classes="hero-heading")
+        with Grid():
+            with Container(classes="table-of-app-container container") as panel:
                 yield Markdown("# Your Apps Live Here")
                 panel.border_title = "App List"
                 with Vertical():
                     yield DisplayTableOfApp()
-                    
-            with Container(classes="container graph-container") as panel:
+                        
+            with Container(classes="graph-container container") as panel:
                 panel.border_title = "App Usage Graph"
                 with Vertical():           
                     yield AppUsage()

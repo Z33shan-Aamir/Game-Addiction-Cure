@@ -1,0 +1,61 @@
+.container{
+    margin: 1;
+    border: solid white;
+    border-title-align: center;
+    border-title-style: bold;
+    
+}
+
+/* All the items displayed in grid */
+Grid {
+    /* second is row first is colums */
+    grid-size: 5 5;   
+    /* grid-gutter: 2; */
+
+    /* keyline: heavy; */
+
+}
+
+.table-of-app-container{
+    row-span: 5;
+    column-span: 1;
+}
+
+.graph-container{
+    row-span: 5;
+    column-span: 4;
+}
+
+/*  styles for the app table container */
+
+
+.data-table-container > DataTable{
+    width: 100%;
+    /* padding: 0 1; */
+    height: 120%;
+ }
+
+.data-table-container {
+    margin: 1;
+    align: center top ;
+    height: 50%;
+    box-sizing: border-box;
+}
+
+.button-container{
+    /* margin: 1; */
+    content-align: center top;
+}
+
+.button-container > Vertical{
+    width: 100%;
+    align: center middle;
+}
+
+.button-container > Horizontal{
+    align-horizontal: center;
+}
+.button-container > Horizontal > Button{
+    /* margin: 0 5; */
+}
+
